@@ -37,7 +37,7 @@ class FaceDetector:
         params:
             image: the original image
         returns:
-
+            xmin, ymin, xmax, ymax: Face Coordinates
         '''
         processed_image = self.preprocess_input(image)
         outputs = self.exec_net.infer({self.input_name:processed_image})
@@ -50,8 +50,11 @@ class FaceDetector:
 
     def preprocess_input(self, image):
         '''
-        Before feeding the data into the model for inference,
-        you might have to preprocess it. This function is where you can do that.
+        Description: This method is meant for preprocessing the image to the required model dimensions.
+        params:
+            image: the original image
+        returns:
+            processed_image: Image converted to the required model shape
         '''
         self.image = image
         processed_image = cv2.resize(image, (self.input_shape[3], self.input_shape[2]))
@@ -62,8 +65,11 @@ class FaceDetector:
 
     def preprocess_output(self, outputs):
         '''
-        Before feeding the output of this model to the next model,
-        you might have to preprocess the output. This function is where you can do that.
+        Description: This method is meant for running Preprocessing on the model outputs
+        params:
+            outputs: Model Output Provdided here and prorcessed as per the requirements
+        returns:
+            xmin, ymin, xmax, ymax: Face Coordinates
         '''
         boxes = outputs[self.output_name][0][0]
         xmin = 0; ymin = 0; xmax = 0; ymax = 0
@@ -87,38 +93,47 @@ class FaceLandmarkDetector:
         self.model_structure = model_name + '.xml'
         self.model_weights = model_name + '.bin'
         self.device = device
-        self.input_name = next(iter(self.model.inputs))
-        self.input_shape = self.model.inputs[self.input_name].shape
-        self.output_name = next(iter(self.model.outputs))
-        self.output_shape = self.model.inputs[self.output_name].shape
         self.exec_net = None
         self.model = None
             
 
     def load_model(self):
         '''
-        This method is for loading the model to the device specified by the user.
-        If your model requires any Plugins, this is where you can load them.
+        Description: This method is for loading the model to the device specified by the user.
         '''
         core = IECore()
         self.model = core.read_network(model = self.model_structure, weights = self.model_weights)
         self.exec_net = core.load_network(network = self.model, device_name = self.device)
 
+        self.input_name = next(iter(self.model.inputs))
+        self.input_shape = self.model.inputs[self.input_name].shape
+        self.output_name = next(iter(self.model.outputs))
+        self.output_shape = self.model.outputs[self.output_name].shape
+
     def predict(self, image):
         '''
-        TODO: You will need to complete this method.
-        This method is meant for running predictions on the input image.
+        Description: This method is meant for running predictions on the input image.
+        params:
+            image: the original image
+        returns:
+            #TODO
         '''
-        raise NotImplementedError
+        
+        processed_image = self.preprocess_input(image)
+        outputs = self.exec_net.infer({self.input_name:processed_image})
+        return self.preprocess_output(outputs)
+
 
     def check_model(self):
-        raise NotImplementedError
+        ''''''
 
     def preprocess_input(self, image):
         '''
         Before feeding the data into the model for inference,
         you might have to preprocess it. This function is where you can do that.
         '''
+
+        self.image = image
         processed_image = cv2.resize(image, (self.input_shape[3], self.input_shape[2]))
         processed_image = processed_image.transpose((2,0,1))
         processed_image = processed_image.reshape(1, *processed_image.shape)
@@ -130,8 +145,12 @@ class FaceLandmarkDetector:
         Before feeding the output of this model to the next model,
         you might have to preprocess the output. This function is where you can do that.
         '''
-        raise NotImplementedError
+        heatmap =  outputs[self.output_name]
+        x0, y0, x1, y1 = heatmap[0][0][0][0], heatmap[0][1][0][0], heatmap[0][2][0][0], heatmap[0][3][0][0]
+        x0, y0, x1, y1 = x0*self.image.shape[1], y0*self.image.shape[0], x1*self.image.shape[1], y1*self.image.shape[0]
 
+        return x0, y0, x1, y1
+        
 class GazeEstimator:
     '''
     Class for the Gaze Estimation Model.
