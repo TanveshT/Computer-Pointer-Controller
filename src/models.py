@@ -241,8 +241,8 @@ class GazeEstimator:
 
     def load_model(self):
         '''
-        This method is for loading the model to the device specified by the user.
-        If your model requires any Plugins, this is where you can load them.
+        Description:
+            This method is for loading the model to the device specified by the user.
         '''
         core = IECore()
         self.model = core.read_network(model = self.model_structure, weights = self.model_weights)
@@ -252,12 +252,22 @@ class GazeEstimator:
         self.output_shape = self.model.outputs[self.output_name].shape
         self.input_shape = self.model.inputs["left_eye_image"].shape
 
-    def predict(self, left_eye, left_eye_):
+    def predict(self, left_eye, right_eye, headpose_angles):
         '''
-        
-        This method is meant for running predictions on the input image.
+        Description: 
+            This method is meant for running predictions on the input image.
+        Params:
+            left_eye: The left eye extracted from face
+            right_eye: The right eye image extracted from face
+            headpose_angles: yaw, pitch, roll angles in degrees fetched from Head Pose Estimation Model
         '''
-        raise NotImplementedError
+
+        processed_left_eye = self.preprocess_input(left_eye)
+        processed_right_eye = self.preprocess_input(right_eye)
+        input_dict = {"left_eye_image": processed_left_eye, "right_eye_image": processed_right_eye, "head_pose_angles": headpose_angles}
+
+        outputs = self.exec_net.infer(input_dict)
+        return self.preprocess_output(outputs)
 
     def check_model(self):
         ''''''
@@ -280,8 +290,14 @@ class GazeEstimator:
 
     def preprocess_output(self, outputs):
         '''
-        Before feeding the output of this model to the next model,
-        you might have to preprocess the output. This function is where you can do that.
+        Description:
+            Preprocess the outputs and send the gaze_vector
+        Params:
+            outputs: the ouptus receivvec from the output
+        Returns:
+            gaze_vector: 
         '''
         
-
+        gaze_vector = outputs[self.output_name]
+        print(gaze_vector)
+        return gaze_vector

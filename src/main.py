@@ -3,8 +3,11 @@ from argparse import ArgumentParser
 from input_feeder import InputFeeder
 import cv2
 from math import sqrt
+from mouse_controller import MouseController
 
 def main():
+
+    controller = MouseController('high','fast')
 
     feed = InputFeeder(input_type="cam")
     feed.load_data()
@@ -35,16 +38,24 @@ def main():
 
         left_eye_X, left_eye_Y, right_eye_X, right_eye_Y = faceLandmarkDetector.predict(face)
 
+        left_eye_X, left_eye_Y, right_eye_X, right_eye_Y, eye_width = int(left_eye_X), int(left_eye_Y), int(right_eye_X), int(right_eye_Y), int(eye_width)
+
         #face = cv2.circle(face, (int(left_eye_X), int(left_eye_Y)), radius = 2, color = (255,0,0), thickness = 2)
         #face = cv2.circle(face, (int(right_eye_X), int(right_eye_Y)), radius = 2, color = (0,255,0), thickness = 2)
 
         face = cv2.rectangle(face, (int(left_eye_X-eye_width), int(left_eye_Y-eye_width)), (int(left_eye_X+eye_width), int(left_eye_Y+eye_width)), color = (255,0,0), thickness = 1)
         face = cv2.rectangle(face, (int(right_eye_X-eye_width), int(right_eye_Y-eye_width)), (int(right_eye_X+eye_width), int(right_eye_Y+eye_width)), color = (255,0,0), thickness = 1)
 
+        left_eye = face[left_eye_X:left_eye_X+eye_width, left_eye_Y:left_eye_Y+eye_width]
+        right_eye = face[right_eye_X:right_eye_X+eye_width, right_eye_Y:right_eye_Y+eye_width]
+        
         headpose_angles = headPoseEstimator.predict(face)
+
+        gaze_vector = gazeEstimator.predict(left_eye, right_eye, headpose_angles)
 
         cv2.imshow("Output", batch)
 
+        controller.move(gaze_vector[0][0], gaze_vector[0][1])
 
         if key_pressed == 27:
            break
