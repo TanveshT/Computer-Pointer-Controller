@@ -17,8 +17,8 @@ def main():
     #gazeEstimator = GazeEstimator()
     #gazeEstimator.load_model()
 
-    #headPoseEstimator = HeadPoseEstimator()
-    #headPoseEstimator.load_model()
+    headPoseEstimator = HeadPoseEstimator(model_name = "models/intel/head-pose-estimation-adas-0001/FP16/head-pose-estimation-adas-0001")
+    headPoseEstimator.load_model()
 
     for batch in feed.next_batch():
 
@@ -33,6 +33,8 @@ def main():
 
         face = cv2.circle(face, (int(left_eye_X), int(left_eye_Y)), radius = 2, color = (255,0,0), thickness = 2)
         face = cv2.circle(face, (int(right_eye_X), int(right_eye_Y)), radius = 2, color = (0,255,0), thickness = 2)
+
+        headPoseEstimator.predict(face)
 
         cv2.imshow("Output", batch)
 

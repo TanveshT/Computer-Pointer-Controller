@@ -223,8 +223,7 @@ class HeadPoseEstimator:
 
     def load_model(self):
         '''
-        This method is for loading the model to the device specified by the user.
-        If your model requires any Plugins, this is where you can load them.
+        Description: This method is for loading the model to the device specified by the user.
         '''
         core = IECore()
         self.model = core.read_network(model = self.model_structure, weights = self.model_weights)
@@ -232,22 +231,32 @@ class HeadPoseEstimator:
         self.input_name = next(iter(self.model.inputs))
         self.input_shape = self.model.inputs[self.input_name].shape
         self.output_name = next(iter(self.model.outputs))
-        self.output_shape = self.model.inputs[self.output_name].shape
+        self.output_shape = self.model.outputs[self.output_name].shape
 
     def predict(self, image):
         '''
-        TODO: You will need to complete this method.
-        This method is meant for running predictions on the input image.
+        Description: 
+            This method is meant for running predictions on the input image.
+        Params:
+            image: The input image
+        Returns:
+            The array received by the method preprocess_outputs() i.e headpose angles
         '''
-        raise NotImplementedError
+        processed_image = self.preprocess_input(image)
+        outputs = self.exec_net.infer({self.input_name:processed_image})
+        return self.preprocess_output(outputs)
 
     def check_model(self):
-        raise NotImplementedError
+        ''''''
 
     def preprocess_input(self, image):
         '''
-        Before feeding the data into the model for inference,
-        you might have to preprocess it. This function is where you can do that.
+        Description:
+            Preprocess inputs according to the model input dimensions
+        Params:
+            image: The input image from capture feed
+        Returns:
+            processed_image: Image with dimensions that matches model input dimensions
         '''
         processed_image = cv2.resize(image, (self.input_shape[3], self.input_shape[2]))
         processed_image = processed_image.transpose((2,0,1))
@@ -257,7 +266,15 @@ class HeadPoseEstimator:
 
     def preprocess_output(self, outputs):
         '''
-        Before feeding the output of this model to the next model,
-        you might have to preprocess the output. This function is where you can do that.
+        Description:
+            Preprocess Outputs before passing it to next model
+        Params: 
+            outputs: Output received by traversing the model
+        Returns:
+            Array: An array with headpose angles "yaw", "pitch", "roll"
         '''
-        raise NotImplementedError
+        yaw = outputs["angle_y_fc"][0][0]
+        pitch = outputs["angle_p_fc"][0][0]
+        roll = outputs["angle_r_fc"][0][0]
+
+        return [yaw, pitch, roll]
