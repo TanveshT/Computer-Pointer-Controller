@@ -1,5 +1,6 @@
 from openvino.inference_engine import IECore
 import cv2
+import numpy as np
 
 class FaceDetector:
     '''
@@ -221,7 +222,7 @@ class HeadPoseEstimator:
         pitch = outputs["angle_p_fc"][0][0]
         roll = outputs["angle_r_fc"][0][0]
 
-        return [yaw, pitch, roll]
+        return np.array([[yaw, pitch, roll]])
 
 class GazeEstimator:
     '''
@@ -234,10 +235,6 @@ class GazeEstimator:
         self.model_structure = model_name + '.xml'
         self.model_weights = model_name + '.bin'
         self.device = device
-        self.input_name = next(iter(self.model.inputs))
-        self.input_shape = self.model.inputs[self.input_name].shape
-        self.output_name = next(iter(self.model.outputs))
-        self.output_shape = self.model.inputs[self.output_name].shape
         self.exec_net = None
         self.model = None
             
@@ -251,21 +248,30 @@ class GazeEstimator:
         self.model = core.read_network(model = self.model_structure, weights = self.model_weights)
         self.exec_net = core.load_network(network = self.model, device_name = self.device)
 
-    def predict(self, image):
+        self.output_name = next(iter(self.model.outputs))
+        self.output_shape = self.model.outputs[self.output_name].shape
+        self.input_shape = self.model.inputs["left_eye_image"].shape
+
+    def predict(self, left_eye, left_eye_):
         '''
-        TODO: You will need to complete this method.
+        
         This method is meant for running predictions on the input image.
         '''
         raise NotImplementedError
 
     def check_model(self):
-        raise NotImplementedError
+        ''''''
 
     def preprocess_input(self, image):
         '''
-        Before feeding the data into the model for inference,
-        you might have to preprocess it. This function is where you can do that.
+        Description:
+            Preprocess inputs according to the model input dimensions
+        Params:
+            image: The RIGHT or LEFT eye for preprocessing
+        Returns:
+            processed_image: Returns the eye image with model dimensions
         '''
+
         processed_image = cv2.resize(image, (self.input_shape[3], self.input_shape[2]))
         processed_image = processed_image.transpose((2,0,1))
         processed_image = processed_image.reshape(1, *processed_image.shape)
@@ -277,5 +283,5 @@ class GazeEstimator:
         Before feeding the output of this model to the next model,
         you might have to preprocess the output. This function is where you can do that.
         '''
-        raise NotImplementedError
+        
 
