@@ -42,9 +42,8 @@ class FaceDetector:
         '''
         processed_image = self.preprocess_input(image)
         outputs = self.exec_net.infer({self.input_name:processed_image})
-        xmin, ymin, xmax, ymax = self.preprocess_output(outputs)
 
-        return xmin, ymin, xmax, ymax
+        return self.preprocess_output(outputs)
 
     def check_model(self):
         ''''''
@@ -81,7 +80,7 @@ class FaceDetector:
                 xmax = int(box[5] * self.image.shape[1])
                 ymax = int(box[6] * self.image.shape[0])
 
-        return xmin, ymin, xmax, ymax
+        return [xmin, ymin, xmax, ymax]
 
 class FaceLandmarkDetector:
     '''
