@@ -73,14 +73,18 @@ class FaceDetector:
         '''
         boxes = outputs[self.output_name][0][0]
         xmin = 0; ymin = 0; xmax = 0; ymax = 0
+        face = np.array([[],[],[]])
         for box in boxes:
             if box[2] > self.confidence:
                 xmin = int(box[3] * self.image.shape[1])
                 ymin = int(box[4] * self.image.shape[0])
                 xmax = int(box[5] * self.image.shape[1])
                 ymax = int(box[6] * self.image.shape[0])
+                new_face = self.image[ymin:ymax, xmin:xmax]
+                if face.shape[0]*face.shape[1] < new_face.shape[0]*new_face.shape[1]:
+                   face = new_face
 
-        return [xmin, ymin, xmax, ymax]
+        return face, [xmin, ymin, xmax, ymax]
 
 class FaceLandmarkDetector:
     '''
