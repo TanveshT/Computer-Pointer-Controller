@@ -13,7 +13,12 @@ source /opt/intel/openvino/bin/setupvars.sh -pyver {PYTHON_VERSION}
 ```
 
 ## Demo
-*TODO:* Explain how to run a basic demo of your model.
+
+### To run demo video
+
+```bash
+
+```
 
 ## Documentation
 *TODO:* Include any documentation that users might need to better understand your project code. For instance, this is a good place to explain the command line arguments that your project supports.
@@ -22,7 +27,12 @@ source /opt/intel/openvino/bin/setupvars.sh -pyver {PYTHON_VERSION}
 *TODO:* Include the benchmark results of running your model on multiple hardwares and multiple model precisions. Your benchmarks can include: model loading time, input/output processing time, model inference time etc.
 
 ## Results
-*TODO:* Discuss the benchmark results and explain why you are getting the results you are getting. For instance, explain why there is difference in inference time for FP32, FP16 and INT8 models.
+|                                                     | FP32 (in ms)        |     FP16 (in ms)    | FP16-INT8 (in ms)   |
+|-----------------------------------------------------|---------------------|:-------------------:|---------------------|
+| Face Detection Model (Same Model for all scenarios) | 0.2433936595916748  | 0.26357316970825195 | 0.2504093647003174  |
+| Face Landmark Detection Model                       | 0.1449739933013916  | 0.6543600559234619  | 0.14608454704284668 |
+| Headpose Detection Model                            | 0.14208269119262695 | 0.6201651096343994  | 0.271759033203125   |
+| Gaze Estimation Model                               | 0.21468305587768555 | 0.3256380558013916  | 0.3227040767669678  |
 
 ## Edge Cases
 

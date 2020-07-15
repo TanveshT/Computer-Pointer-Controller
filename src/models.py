@@ -316,5 +316,4 @@ class GazeEstimator:
         '''
         
         gaze_vector = outputs[self.output_name]
-        print(gaze_vector)
         return gaze_vector
