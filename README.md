@@ -1,9 +1,16 @@
 # Computer Pointer Controller
 
-*TODO:* Write a short introduction to your project
+This project is made using the Intel's OpenVINO toolkit. This project enables the user to move the mouse pointer according to the gaze of the user.
 
 ## Project Set Up and Installation
-*TODO:* Explain the setup procedures to run your project. For instance, this can include your project directory structure, the models you need to download and where to place them etc. Also include details about how to install the dependencies your project requires.
+
+Requirements:
+* Intel's OpenVINO toolkit
+
+After installing OpenVINO 
+```bash
+source /opt/intel/openvino/bin/setupvars.sh -pyver {PYTHON_VERSION}
+```
 
 ## Demo
 *TODO:* Explain how to run a basic demo of your model.
@@ -17,11 +24,7 @@
 ## Results
 *TODO:* Discuss the benchmark results and explain why you are getting the results you are getting. For instance, explain why there is difference in inference time for FP32, FP16 and INT8 models.
 
-## Stand Out Suggestions
-This is where you can provide information about the stand out suggestions that you have attempted.
+## Edge Cases
 
-### Async Inference
-If you have used Async Inference in your code, benchmark the results and explain its effects on power and performance of your project.
-
-### Edge Cases
-There will be certain situations that will break your inference flow. For instance, lighting changes or multiple people in the frame. Explain some of the edge cases you encountered in your project and how you solved them to make your project more robust.
+* The face which is closest to camera will be taken into consideration and the gaze of that particular face will be calculated.
+* Even if there is no one in the frame the application will be running.

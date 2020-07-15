@@ -40,10 +40,13 @@ class FaceDetector:
         returns:
             xmin, ymin, xmax, ymax: Face Coordinates
         '''
+        
         processed_image = self.preprocess_input(image)
-        outputs = self.exec_net.infer({self.input_name:processed_image})
+        request_handler = self.exec_net.start_async(request_id = 0, inputs={self.input_name:processed_image})
+        if self.exec_net.requests[0].wait(-1) == 0:
+            return self.preprocess_output(request_handler.outputs)
 
-        return self.preprocess_output(outputs)
+        return None
 
     def check_model(self):
         ''''''
@@ -69,6 +72,7 @@ class FaceDetector:
         params:
             outputs: Model Output Provdided here and prorcessed as per the requirements
         returns:
+            face: The cropped Face image
             xmin, ymin, xmax, ymax: Face Coordinates
         '''
         boxes = outputs[self.output_name][0][0]
@@ -122,10 +126,14 @@ class FaceLandmarkDetector:
         returns:
             #TODO
         '''
-        
+
+
         processed_image = self.preprocess_input(image)
-        outputs = self.exec_net.infer({self.input_name:processed_image})
-        return self.preprocess_output(outputs)
+        request_handler = self.exec_net.start_async(request_id = 0, inputs={self.input_name:processed_image})
+        if self.exec_net.requests[0].wait(-1) == 0:
+            return self.preprocess_output(request_handler.outputs)
+
+        return None
 
 
     def check_model(self):
@@ -191,8 +199,11 @@ class HeadPoseEstimator:
             The array received by the method preprocess_outputs() i.e headpose angles
         '''
         processed_image = self.preprocess_input(image)
-        outputs = self.exec_net.infer({self.input_name:processed_image})
-        return self.preprocess_output(outputs)
+        request_handler = self.exec_net.start_async(request_id = 0, inputs={self.input_name:processed_image})
+        if self.exec_net.requests[0].wait(-1) == 0:
+            return self.preprocess_output(request_handler.outputs)
+
+        return None
 
     def check_model(self):
         ''''''
@@ -269,8 +280,11 @@ class GazeEstimator:
         processed_right_eye = self.preprocess_input(right_eye)
         input_dict = {"left_eye_image": processed_left_eye, "right_eye_image": processed_right_eye, "head_pose_angles": headpose_angles}
 
-        outputs = self.exec_net.infer(input_dict)
-        return self.preprocess_output(outputs)
+        request_handler = self.exec_net.start_async(request_id = 0, inputs=input_dict)
+        if self.exec_net.requests[0].wait(-1) == 0:
+            return self.preprocess_output(request_handler.outputs)
+
+        return None
 
     def check_model(self):
         ''''''
@@ -296,7 +310,7 @@ class GazeEstimator:
         Description:
             Preprocess the outputs and send the gaze_vector
         Params:
-            outputs: the ouptus receivvec from the output
+            outputs: the outputs received from the output
         Returns:
             gaze_vector: 
         '''

@@ -21,28 +21,21 @@ def main():
     headPoseEstimator = HeadPoseEstimator(model_name = "models/intel/head-pose-estimation-adas-0001/FP16-INT8/head-pose-estimation-adas-0001")
     headPoseEstimator.load_model()
 
-    gazeEstimator = GazeEstimator("models/intel/gaze-estimation-adas-0002/FP16-INT8/gaze-estimation-adas-0002")
+    gazeEstimator = GazeEstimator(model_name = "models/intel/gaze-estimation-adas-0002/FP16-INT8/gaze-estimation-adas-0002")
     gazeEstimator.load_model()
 
     for batch in feed.next_batch():
 
         key_pressed = cv2.waitKey(60)
-        face, coords = faceDetector.predict(batch)
-        '''
-            Face Box: Lower Point and Higher Point Co-ordinates
-            coords = [xmin, ymin, xmax, ymax]
-        '''
-    
-        #face = batch[coords[1]:coords[3], coords[0]:coords[2]]
-        if len(face) == 0:
-            cv2.putText(batch, "NO FACE DETECTED", org = (10,50), fontFace = cv2.FONT_HERSHEY_SIMPLEX, thickness = 2, fontScale = 1, color = (0,0,255))
-        else:
-            #Calculation for eye width according to face dimensions
+ 
+        try: 
+            face, coords = faceDetector.predict(batch)
             eye_width = sqrt((face.shape[0]*face.shape[1])/100)
 
             batch = cv2.rectangle(batch, (coords[0],coords[1]), (coords[2],coords[3]), (0,255,0), thickness = 2)
 
             left_eye_X, left_eye_Y, right_eye_X, right_eye_Y = faceLandmarkDetector.predict(face)
+
             left_eye_X, left_eye_Y, right_eye_X, right_eye_Y, eye_width = int(left_eye_X), int(left_eye_Y), int(right_eye_X), int(right_eye_Y), int(eye_width)
 
             face = cv2.rectangle(face, (int(left_eye_X-eye_width), int(left_eye_Y-eye_width)), (int(left_eye_X+eye_width), int(left_eye_Y+eye_width)), color = (255,0,0), thickness = 1)
@@ -56,6 +49,9 @@ def main():
             gaze_vector = gazeEstimator.predict(left_eye, right_eye, headpose_angles)
 
             controller.move(gaze_vector[0][0], gaze_vector[0][1])
+        
+        except:
+            cv2.putText(batch, "Landmarks or Face not Detected!", org = (10,50), fontFace = cv2.FONT_HERSHEY_SIMPLEX, thickness = 2, fontScale = 1, color = (0,0,255))
 
         cv2.imshow("Output", batch)
         if key_pressed == 27:
