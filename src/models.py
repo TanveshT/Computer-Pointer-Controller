@@ -48,9 +48,6 @@ class FaceDetector:
 
         return None
 
-    def check_model(self):
-        ''''''
-
     def preprocess_input(self, image):
         '''
         Description: This method is meant for preprocessing the image to the required model dimensions.
@@ -135,10 +132,6 @@ class FaceLandmarkDetector:
 
         return None
 
-
-    def check_model(self):
-        ''''''
-
     def preprocess_input(self, image):
         '''
         Before feeding the data into the model for inference,
@@ -204,9 +197,6 @@ class HeadPoseEstimator:
             return self.preprocess_output(request_handler.outputs)
 
         return None
-
-    def check_model(self):
-        ''''''
 
     def preprocess_input(self, image):
         '''
@@ -285,9 +275,6 @@ class GazeEstimator:
             return self.preprocess_output(request_handler.outputs)
 
         return None
-
-    def check_model(self):
-        ''''''
 
     def preprocess_input(self, image):
         '''
