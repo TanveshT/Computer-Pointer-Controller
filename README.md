@@ -8,9 +8,24 @@ Requirements:
 * Intel's OpenVINO toolkit
 
 After installing OpenVINO 
+
+***Step 1:*** Install the requirements
+
+```bash
+pip install -r requirements.txt
+```
+
+***Step 2:*** Setup OpenVINO for running inference.
+
 ```bash
 source /opt/intel/openvino/bin/setupvars.sh -pyver {PYTHON_VERSION}
 ```
+
+## Workflow
+
+The following workflow is used to run inference on the input stream.
+
+![](resources/pipeline.png)
 
 ## Demo
 
@@ -27,6 +42,41 @@ python main.py -input_type cam
 ```
 
 ## Documentation
+
+### Project Structure
+
+```bash
+.
+├── bin
+│   └── demo.mp4
+├── LICENSE
+├── main.py
+├── models
+│   └── intel
+│       ├── face-detection-adas-binary-0001
+│       ├── gaze-estimation-adas-0002
+│       ├── head-pose-estimation-adas-0001
+│       └── landmarks-regression-retail-0009
+├── README.md
+├── requirements.txt
+├── resources
+│   └── pipeline.png
+├── src
+│   ├── input_feeder.py
+│   ├── models.py
+│   └── mouse_controller.py
+└── utils
+    └── ModelBase.py
+```
+
+#### Important Files
+
+* `input_feeder.py`: This file contains a InputFeeder Class which handles the input stream.
+* `model.py`: Classes for various models have been written in this file
+* `mouse_controller.py`: Contains the MouseController Class which moves the mouse pointer accordingly to the gaze.
+* `ModelBase.py`: Contains base Model Class from which the other model class in `models.py` have been inherited.
+* `main.py`: This is the main driver file for the entire application.
+* `requirements.txt`: All python library dependencies can be installed from this file.
 
 ### Command-Line Arguments
 
