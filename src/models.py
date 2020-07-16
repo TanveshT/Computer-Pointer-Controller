@@ -1,8 +1,9 @@
 from openvino.inference_engine import IECore
 import cv2
 import numpy as np
+from utils.ModelBase import Model
 
-class FaceDetector:
+class FaceDetector(Model):
     '''
     Class for the Face Detection Model.
     '''
@@ -10,27 +11,14 @@ class FaceDetector:
         '''
         Initializes the model by taking in the model path
         '''
-        self.model_structure = model_name + '.xml'
-        self.model_weights = model_name + '.bin'
-        self.device = device
-        self.exec_net = None
-        self.model = None
+        Model.__init__(self, model_name=model_name, device=device, extensions = extensions)
         self.confidence = conf
             
-
     def load_model(self):
         '''
         This method is for loading the model to the device specified by the user.
-        If your model requires any Plugins, this is where you can load them.
         '''
-        core = IECore()
-        self.model = core.read_network(model = self.model_structure, weights = self.model_weights)
-        self.exec_net = core.load_network(network = self.model, device_name = self.device)
-
-        self.input_name = next(iter(self.model.inputs))
-        self.input_shape = self.model.inputs[self.input_name].shape
-        self.output_name = next(iter(self.model.outputs))
-        self.output_shape = self.model.outputs[self.output_name].shape
+        Model.load_model(self)
 
     def predict(self, image):
         '''
@@ -42,6 +30,7 @@ class FaceDetector:
         '''
         
         processed_image = self.preprocess_input(image)
+
         request_handler = self.exec_net.start_async(request_id = 0, inputs={self.input_name:processed_image})
         if self.exec_net.requests[0].wait(-1) == 0:
             return self.preprocess_output(request_handler.outputs)
@@ -56,12 +45,8 @@ class FaceDetector:
         returns:
             processed_image: Image converted to the required model shape
         '''
-        self.image = image
-        processed_image = cv2.resize(image, (self.input_shape[3], self.input_shape[2]))
-        processed_image = processed_image.transpose((2,0,1))
-        processed_image = processed_image.reshape(1, *processed_image.shape)
-        
-        return processed_image
+
+        return Model.preprocess_input(self, image)
 
     def preprocess_output(self, outputs):
         '''
@@ -87,7 +72,7 @@ class FaceDetector:
 
         return face, [xmin, ymin, xmax, ymax]
 
-class FaceLandmarkDetector:
+class FaceLandmarkDetector(Model):
     '''
     Class for the Face Landmark Detection Model.
     '''
@@ -95,25 +80,13 @@ class FaceLandmarkDetector:
         '''
         Initializes the model by taking in the model path
         '''
-        self.model_structure = model_name + '.xml'
-        self.model_weights = model_name + '.bin'
-        self.device = device
-        self.exec_net = None
-        self.model = None
+        Model.__init__(self, model_name=model_name, device=device, extensions = extensions)
             
-
     def load_model(self):
         '''
         Description: This method is for loading the model to the device specified by the user.
         '''
-        core = IECore()
-        self.model = core.read_network(model = self.model_structure, weights = self.model_weights)
-        self.exec_net = core.load_network(network = self.model, device_name = self.device)
-
-        self.input_name = next(iter(self.model.inputs))
-        self.input_shape = self.model.inputs[self.input_name].shape
-        self.output_name = next(iter(self.model.outputs))
-        self.output_shape = self.model.outputs[self.output_name].shape
+        Model.load_model(self)
 
     def predict(self, image):
         '''
@@ -121,9 +94,8 @@ class FaceLandmarkDetector:
         params:
             image: the original image
         returns:
-            #TODO
+            TODO add documentation over here
         '''
-
 
         processed_image = self.preprocess_input(image)
         request_handler = self.exec_net.start_async(request_id = 0, inputs={self.input_name:processed_image})
@@ -138,12 +110,7 @@ class FaceLandmarkDetector:
         you might have to preprocess it. This function is where you can do that.
         '''
 
-        self.image = image
-        processed_image = cv2.resize(image, (self.input_shape[3], self.input_shape[2]))
-        processed_image = processed_image.transpose((2,0,1))
-        processed_image = processed_image.reshape(1, *processed_image.shape)
-        
-        return processed_image
+        return Model.preprocess_input(self, image)
 
     def preprocess_output(self, outputs):
         '''
@@ -156,7 +123,7 @@ class FaceLandmarkDetector:
 
         return x0, y0, x1, y1
         
-class HeadPoseEstimator:
+class HeadPoseEstimator(Model):
     '''
     Class for the Head Pose Estimation Model.
     '''
@@ -164,23 +131,14 @@ class HeadPoseEstimator:
         '''
         Initializes the model by taking in the model path
         '''
-        self.model_structure = model_name + '.xml'
-        self.model_weights = model_name + '.bin'
-        self.device = device
-        self.exec_net = None
-      
+        Model.__init__(self, model_name=model_name, device=device, extensions = extensions)
 
     def load_model(self):
         '''
         Description: This method is for loading the model to the device specified by the user.
         '''
-        core = IECore()
-        self.model = core.read_network(model = self.model_structure, weights = self.model_weights)
-        self.exec_net = core.load_network(network = self.model, device_name = self.device)
-        self.input_name = next(iter(self.model.inputs))
-        self.input_shape = self.model.inputs[self.input_name].shape
-        self.output_name = next(iter(self.model.outputs))
-        self.output_shape = self.model.outputs[self.output_name].shape
+
+        Model.load_model(self)
 
     def predict(self, image):
         '''
@@ -207,11 +165,8 @@ class HeadPoseEstimator:
         Returns:
             processed_image: Image with dimensions that matches model input dimensions
         '''
-        processed_image = cv2.resize(image, (self.input_shape[3], self.input_shape[2]))
-        processed_image = processed_image.transpose((2,0,1))
-        processed_image = processed_image.reshape(1, *processed_image.shape)
-        
-        return processed_image
+
+        return Model.preprocess_input(self, image)
 
     def preprocess_output(self, outputs):
         '''
@@ -228,7 +183,7 @@ class HeadPoseEstimator:
 
         return np.array([[yaw, pitch, roll]])
 
-class GazeEstimator:
+class GazeEstimator(Model):
     '''
     Class for the Gaze Estimation Model.
     '''
@@ -236,24 +191,14 @@ class GazeEstimator:
         '''
         Initializes the model by taking in the model path
         '''
-        self.model_structure = model_name + '.xml'
-        self.model_weights = model_name + '.bin'
-        self.device = device
-        self.exec_net = None
-        self.model = None
+        Model.__init__(self, model_name, device, extensions)
             
-
     def load_model(self):
         '''
         Description:
             This method is for loading the model to the device specified by the user.
         '''
-        core = IECore()
-        self.model = core.read_network(model = self.model_structure, weights = self.model_weights)
-        self.exec_net = core.load_network(network = self.model, device_name = self.device)
-
-        self.output_name = next(iter(self.model.outputs))
-        self.output_shape = self.model.outputs[self.output_name].shape
+        Model.load_model(self)
         self.input_shape = self.model.inputs["left_eye_image"].shape
 
     def predict(self, left_eye, right_eye, headpose_angles):
@@ -285,12 +230,7 @@ class GazeEstimator:
         Returns:
             processed_image: Returns the eye image with model dimensions
         '''
-
-        processed_image = cv2.resize(image, (self.input_shape[3], self.input_shape[2]))
-        processed_image = processed_image.transpose((2,0,1))
-        processed_image = processed_image.reshape(1, *processed_image.shape)
-        
-        return processed_image
+        return Model.preprocess_input(self, image)
 
     def preprocess_output(self, outputs):
         '''
@@ -299,7 +239,7 @@ class GazeEstimator:
         Params:
             outputs: the outputs received from the output
         Returns:
-            gaze_vector: 
+            gaze_vector: TODO add reference of gaze
         '''
         
         gaze_vector = outputs[self.output_name]
