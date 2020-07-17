@@ -118,10 +118,15 @@ class FaceLandmarkDetector(Model):
         you might have to preprocess the output. This function is where you can do that.
         '''
         heatmap =  outputs[self.output_name]
+        # Left Eye and Right Eye Landmarks
         x0, y0, x1, y1 = heatmap[0][0][0][0], heatmap[0][1][0][0], heatmap[0][2][0][0], heatmap[0][3][0][0]
         x0, y0, x1, y1 = x0*self.image.shape[1], y0*self.image.shape[0], x1*self.image.shape[1], y1*self.image.shape[0]
 
-        return x0, y0, x1, y1
+        # Other Landmarks
+        x2, y2, x3, y3, x4, y4 = heatmap[0][4][0][0], heatmap[0][5][0][0], heatmap[0][6][0][0], heatmap[0][7][0][0], heatmap[0][8][0][0], heatmap[0][9][0][0]
+        x2, y2, x3, y3, x4, y4 = x2*self.image.shape[1], y2*self.image.shape[0], x3*self.image.shape[1], y3*self.image.shape[0], x4*self.image.shape[1], y4*self.image.shape[0]
+
+        return (x0, y0, x1, y1, x2, y2, x3, y3, x4, y4)
         
 class HeadPoseEstimator(Model):
     '''
