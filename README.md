@@ -6,6 +6,7 @@ This project is made using the Intel's OpenVINO toolkit. This project enables th
 
 Requirements:
 * Intel's OpenVINO toolkit
+* PyAutoGUI
 
 After installing OpenVINO 
 
@@ -41,6 +42,41 @@ python main.py -input_type video -input_stream bin/demo.mp4
 python main.py -input_type cam
 ```
 
+## Running inferences on separate models
+
+### 1. Face Detection
+
+```bash
+python main.py -input_type video -input_stream bin/demo.mp4 -flag fd
+```
+
+### 2. Face Landmark Detection
+
+```bash
+python main.py -input_type video -input_stream bin/demo.mp4 -flag ld
+```
+
+### 3. Head Pose Detection
+
+```bash
+python main.py -input_type video -input_stream bin/demo.mp4 -flag hd
+```
+
+### 4. Gaze Estimation
+
+```bash
+python main.py -input_type video -input_stream bin/demo.mp4 -flag ge
+```
+
+| Face Detection        | Facial Landmarks Detection |
+|-----------------------|----------------------------|
+| ![](resources/fd.gif) | ![](resources/ld.gif)      |
+
+
+| Head Pose Detection   | Gaze Estimation       |
+|-----------------------|-----------------------|
+| ![](resources/hd.gif) | ![](resources/gaze.gif) |
+
 ## Documentation
 
 ### Project Structure
@@ -60,7 +96,6 @@ python main.py -input_type cam
 ├── README.md
 ├── requirements.txt
 ├── resources
-│   └── pipeline.png
 ├── src
 │   ├── input_feeder.py
 │   ├── models.py
@@ -83,20 +118,25 @@ python main.py -input_type cam
 ```bash
 usage: main.py [-h] [-input_stream INPUT_STREAM]
                [-device {CPU,GPU,HETERO:FPGA,CPU,HETERO:MYRIAD,CPU}]
-               [-prob_threshold PROB_THRESHOLD] -input_type {cam,video,image}
+               [-prob_threshold PROB_THRESHOLD] [-flag {fd,ld,hd,ge}]
+               -input_type {cam,video,img}
 
 optional arguments:
   -h, --help            show this help message and exit
   -input_stream INPUT_STREAM
-                        Give path of input stream if input_type is 'video' or
-                        'image'
+                        Give path of input stream if input_type is 'video' or 'img'
   -device {CPU,GPU,HETERO:FPGA,CPU,HETERO:MYRIAD,CPU}
                         State the device on which inference should happen
   -prob_threshold PROB_THRESHOLD
                         Probability threshold for face detections filtering
+  -flag {fd,ld,hd,ge}   Choose a particular model only to run inference 
+                         fd: Only Face Detection 
+                         ld: Only Face Landmark Detection 
+                         hd: Only Head Pose Detection 
+                         ge: Only Gaze Estimation
 
 required arguments:
-  -input_type {cam,video,image}
+  -input_type {cam,video,img}
                         Give the type of input stream
 ```
 

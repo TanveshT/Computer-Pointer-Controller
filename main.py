@@ -136,14 +136,14 @@ def main(args):
                                 pt1 = (coords[0]+left_eye_X, coords[1]+left_eye_Y),
                                 pt2 = (coords[0]+left_eye_X + gaze_arrow[0], coords[1]+left_eye_Y + gaze_arrow[1]),
                                 color = (0,255,255),
-                                thickness = 3
+                                thickness = 2
                                 )
 
                 cv2.arrowedLine(img = batch,
                                 pt1 = (coords[0]+right_eye_X, coords[1]+right_eye_Y),
                                 pt2 = (coords[0]+right_eye_X + gaze_arrow[0],coords[1]+ right_eye_Y + gaze_arrow[1]),
                                 color = (0,255,255),
-                                thickness = 3
+                                thickness = 2
                                 )
             elif hdFlag:
 
@@ -180,11 +180,11 @@ def main(args):
 
             elif ldFlag:
                 
-                cv2.circle(face, (int(landmarks[0]), int(landmarks[1])), 10, (255,0,0), -1)
-                cv2.circle(face, (int(landmarks[2]), int(landmarks[3])), 10, (255,0,0), -1)
-                cv2.circle(face, (int(landmarks[4]), int(landmarks[5])), 10, (255,0,0), -1)
-                cv2.circle(face, (int(landmarks[6]), int(landmarks[7])), 10, (255,0,0), -1)
-                cv2.circle(face, (int(landmarks[8]), int(landmarks[9])), 10, (255,0,0), -1)
+                cv2.circle(face, (int(landmarks[0]), int(landmarks[1])), 10, (255,255,0), -1)
+                cv2.circle(face, (int(landmarks[2]), int(landmarks[3])), 10, (255,255,0), -1)
+                cv2.circle(face, (int(landmarks[4]), int(landmarks[5])), 10, (255,255,0), -1)
+                cv2.circle(face, (int(landmarks[6]), int(landmarks[7])), 10, (255,255,0), -1)
+                cv2.circle(face, (int(landmarks[8]), int(landmarks[9])), 10, (255,255,0), -1)
 
 
             elif fdFlag:
