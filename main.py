@@ -9,7 +9,6 @@ from math import sqrt, sin, cos, pi
 import time
 import logging as log
 import sys
-import traceback
 
 def build_parser():
     '''
@@ -207,7 +206,6 @@ def main(args):
            break
 
     feed.close()
-    out.release()
     cv2.destroyAllWindows()
 
 if __name__ == "__main__": 
